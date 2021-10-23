@@ -1,0 +1,207 @@
+body {
+  background-color: rgb(0, 255, 42);
+  font-family: Futura;
+}
+
+.editor-main-toolbar {
+  height: 100%;
+}
+
+.label-icon {
+  width: 24px;
+  height: 24px;
+  display: inline-block;
+  border-radius: 100%;
+  margin-right: 8px;
+  border: 2px solid white;
+  cursor: pointer;
+}
+
+.label-icon:hover {
+  border: 2px solid gray;
+}
+
+.app-navbar-btn-areola {
+  cursor: pointer;
+  border: 2px solid black;
+  border-radius: 100%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.app-navbar-btn-areola:hover {
+  border-color: white;
+}
+
+.app-navbar {
+  border: 2px white;
+  height: 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  /*background-image: linear-gradient(to bottom right, dodgerblue, whitesmoke);*/
+}
+.treshold-brush-icon-container {
+  border-radius: 100%;
+  border: 2px solid black;
+  width: 28px;
+  height: 28px;
+  margin-left: 8px;
+  margin-right: 8px;
+}
+
+.treshold-brush-icon-container:hover {
+  border: 2px solid white;
+  cursor: pointer;
+}
+
+.editor-top {
+  display: flex;
+  justify-content: center;
+  margin-left: 32px;
+  margin-right: 32px;
+  height: calc(100vh - 32px - 8px);
+  overflow: hidden; 
+  justify-content: space-between;
+}
+
+.editor-segment-tmp {
+  fill: cyan;
+}
+
+.editor-segment-tmp:hover {
+  stroke: orange;
+  stroke-opacity: 1.0;
+}
+
+.navbar-dashboard {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.progress-circle {
+  transform: rotate(-90deg);
+  padding: 4px;
+}
+
+.navbar-icon {
+  height: 100%;
+  background-color: rgb(145, 145, 145);
+  padding-left: 16px;
+  padding-right: 16px;
+  border: 2px solid darkgray;
+  cursor: pointer;
+  border-bottom: 3px solid darkgray;
+  border-right: 3px solid darkgray;
+}
+
+.navbar-icon:hover {
+  color: whitesmoke;
+}
+
+.editor-title {
+  display: flex;
+  align-content: center;
+}
+
+.app-logo {
+  font-family: Futura;
+}
+
+.editor-side {
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  width: 256px;
+  height: 400px;
+}
+
+.editor-side-tab {
+  display: flex;
+  flex-direction: column;
+}
+
+.editor-main-gallery {
+  position: relative; 
+  cursor: none;
+}
+
+.editor-main-container {
+  position: relative;
+}
+
+.editor-main-gallery-image-bg {
+
+}
+
+.editor-main-gallery-cc {
+}
+
+/*.editor-main-gallery-cc:hover {
+  color: blue;
+  fill: blue;
+  animation: blink-animation 1s steps(5, start) infinite;
+  -webkit-animation: blink-animation 1s steps(5, start) infinite;
+}*/
+
+.editor-main-gallery-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+@keyframes blink-animation {
+  to {
+    visibility: hidden;
+  }
+}
+@-webkit-keyframes blink-animation {
+  to {
+    visibility: hidden;
+  }
+}
+
+/*.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+*/
