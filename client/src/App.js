@@ -328,8 +328,9 @@ function Editor({show}) {
   const gapi = window.gapi
   const uploadLabel = (image, filename) => {
     const file = image.replace("data:image/png;base64,", "")
-    const [data, boundary] = fileToMultipart(`folder/${filename}.png`, file, "image/png")
-    gapi.client.request({
+    const [data, boundary] = fileToMultipart(`${filename}.png`, file, "image/png")
+    if(!window.gapi) return //return error or throw
+    window.gapi.client.request({
       path: '/upload/drive/v3/files?uploadType=multipart',
       method: 'POST',
       headers: {
@@ -373,10 +374,95 @@ function Editor({show}) {
   )
 }
 
-const VERSION = "EDGE"//"SERVERCLIENT"
+function listFiles() {
+  window.gapi.client.request('/drive/v3/files').execute(r => {
+    console.log(r)
+  })
+}
+
+function listDrives(callback) {
+  if(!window.gapi) return
+  window.gapi.client.request('/drive/v3/drives').execute(r => {
+    
+  })
+}
+
+function ls(callback) {
+  window.gapi.client.drive.files.list({
+    q: "mimeType = 'application/vnd.google-apps.folder'"
+  }).then(r => {
+    callback(r.result.files)
+  })
+}
+
+function previewFolder(source, callback) {
+
+}
+
+function lsImages(folderId, consumeFiles) {
+  window.gapi.client.drive.files.list({
+    q: `(mimeType = 'image/png' or mimeType = 'image/jpeg') and '${folderId}' in parents`
+  }).then(r => {
+    consumeFiles(r.result.files)
+  })
+}
+
+function getImage(fileId, consumeImage) {
+  window.gapi.client.drive.files.get({
+    fileId: fileId,
+    alt: 'media'
+  }).then(res => consumeImage(`data:${res.headers["Content-Type"]};base64,${btoa(res.body)}`))
+}
+
+function DriveFolder({file}) {
+  const [files, setFiles] = useState([])
+  const [preview, setPreview] = useState()
+  useEffect(() => {
+    if(!file.id) return
+    lsImages(file.id, setFiles)
+  }, [file.id])
+  useEffect(() => {
+    if(files.length < 1) return
+    getImage(files[0].id, setPreview)
+  }, [files.length])
+  return (
+    <div style={{width: '240px', background: 'rgba(30,30,30,0.5)', 
+      display: 'flex', flexDirection: 'column', alignItems: 'center',
+      borderRadius: '8px', justifyContent: 'space-between'
+    }}>
+      <span>{file.name}</span>
+      <img src={preview} alt="preview" style={preview ? {width: '200px'} : {display: 'none'}} />
+      <button>Create project from source</button>
+      <span>{files.length} files</span>
+    </div>
+  )
+}
+
+function Home({show}) {
+  const gapi = window.gapi
+  const [folders, setFolders] = useState([])
+  useEffect(() => {
+    if(!show) return
+    ls(setFolders)
+  }, [show])
+  return (
+    <div style={show ? {} : {display: 'none'  }}>
+      <h1>PIXL</h1>
+      <h2>Projects</h2>
+
+      <h2>Create project</h2>
+      <h3>GDrive sources</h3>
+      <div style={{display: 'flex', justifyContent: 'space-around'}}>
+        {folders.map((f) => <DriveFolder 
+          file={f}
+        />)}
+      </div>
+    </div>
+  )
+}
 
 function App() {
-  const [state, setState] = useState({main: "home"})
+  const [state, setState] = useState({view: "home"})
   const [gapiState, setGapiState] = useState('unloaded')
   const gapi = window.gapi
   console.log("GAPI", gapi)
@@ -413,7 +499,8 @@ function App() {
       <div style={gapiState === 'unloaded' ? {} : {display: 'none'}}>
           <button onClick={() => setGapiState('loaded')}>Sign in</button>
       </div>
-      <Editor show={gapiState !== 'unloaded'} />
+      <Home show={state.view === 'home' && gapiState === 'signedin'} />
+      <Editor show={gapiState === 'signedin' && state.view === 'editor'} />
     </div>
   )
 }
