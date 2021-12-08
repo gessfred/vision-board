@@ -12,6 +12,47 @@ const CONFIG = {
 const TEST_DATA = `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`
 
 
+function listFiles() {
+  window.gapi.client.request('/drive/v3/files').execute(r => {
+    console.log(r)
+  })
+}
+
+function listDrives(callback) {
+  if(!window.gapi) return
+  window.gapi.client.request('/drive/v3/drives').execute(r => {
+    
+  })
+}
+
+function ls(callback) {
+  window.gapi.client.drive.files.list({
+    q: "mimeType = 'application/vnd.google-apps.folder'"
+  }).then(r => {
+    callback(r.result.files)
+  })
+}
+
+function previewFolder(source, callback) {
+
+}
+
+function lsImages(folderId, consumeFiles) {
+  window.gapi.client.drive.files.list({
+    q: `(mimeType = 'image/png' or mimeType = 'image/jpeg') and '${folderId}' in parents`
+  }).then(r => {
+    consumeFiles(r.result.files)
+  })
+}
+
+function getImage(fileId, consumeImage) {
+  window.gapi.client.drive.files.get({
+    fileId: fileId,
+    alt: 'media'
+  }).then(res => consumeImage(`data:${res.headers["Content-Type"]};base64,${btoa(res.body)}`))
+}
+
+
 const getMethods = (obj) => {
   let properties = new Set()
   let currentObj = obj
@@ -24,7 +65,9 @@ const getMethods = (obj) => {
 const CV_COLORS = {
   orange: new cv.Scalar(255, 2555, 0, 255),
   magenta: new cv.Scalar(255, 0, 255, 255),
-  cyan: new cv.Scalar(0, 0, 255, 255)
+  cyan: new cv.Scalar(0, 0, 255, 255),
+  dodgerblue: new cv.Scalar(0,0,255,255),
+  red: new cv.Scalar(255,0,0,255)
 }
 
 function mergeLabel(original, label) {
@@ -224,11 +267,10 @@ function fileToMultipart(filename, file, mimeType) {
   return [lines.join("\r\n"), boundary]
 }
 
-function OpenCVEditor({show, labels}) {
+function OpenCVEditor({show, labels, image}) {
   const [data, setData] = useState({raw: null, threshold: null})
   const canvas = useRef(null)
   const cv = window.cv 
-  const gapi = window.gapi
   const [toolPosition, setToolPosition] = useState({x: 0, y: 0})
   const [brushSize, setBrushSize] = useState(10)
   const [brushSensitivity, setBrushSensitivity] = useState(80) //=threshold
@@ -258,42 +300,49 @@ function OpenCVEditor({show, labels}) {
   
   const commitLabel = () => {
     let label = labels.value[labels.current]
-    //console.log(cursorMask.rows, cursorMask.cols, cursorMask)
-    
     if(!label.mat) {
       const m = cv.Mat.zeros(cursorMask.rows, cursorMask.cols, cursorMask.type())
       label = Object.assign({}, label, {mat: m})
     }
     const l = mergeLabel(label, cursorMask)
-    
     labels.set(prev => Object.assign({}, prev, {[labels.current]: l}))
   }
   const readData = e => {
+    console.log('readding data', e.target, image)
     const mat = cv.imread(e.target)
+    console.log(mat)
     setData({raw: mat})
   }
-  
-  
   useEffect(() => {
     if(!data || !data.threshold || !data.threshold.ptr) return
     setData(data0 => Object.assign({}, data0, {cc: getCC(data0.threshold)}))
   }, [brushSensitivity, data.raw && data.raw.ptr, data.threshold && data.threshold.ptr])
   useEffect(() => {
-    if(!data || !canvas.current || !data.raw || !data.threshold || !data.cc) return
+    if(
+      !data || !canvas.current || !data.raw || !data.threshold || 
+      !data.cc || !labels.value || labels.current === undefined
+    ) 
+      return
     let copy = data.raw.clone()
     const pos = new cv.Point(toolPosition.x, toolPosition.y)
     let component = nearestNeighbour(toolPosition, data.cc.dynamic)
-    let r = applyBrush(toRGBA(component.mat), pos, brushSize, labels.value[labels.current].color)
-    let rc = r.clone()
-    renderLabels(rc, labels.value)
-    setCursorMask(r)
-    let res = r.clone()
-    cv.addWeighted(copy, 1.0, rc, 1.0, 0, res)
-    if(isEditingBrush) {
-      renderControls(res, pos, brushSensitivity)
+    if(component && component.mat) {
+      let r = applyBrush(toRGBA(component.mat), pos, brushSize, labels.value[labels.current].color)
+      let rc = r.clone()
+      renderLabels(rc, labels.value)
+      setCursorMask(r)
+      let res = r.clone()
+      cv.addWeighted(copy, 1.0, rc, 1.0, 0, res)
+      if(isEditingBrush) {
+        renderControls(res, pos, brushSensitivity)
+      }
+      renderBrush(res, pos, brushSize)
+      cv.imshow(canvas.current, res)
+    } else {
+      let res = copy
+      renderBrush(res, pos, brushSize)
+      cv.imshow(canvas.current, res)
     }
-    renderBrush(res, pos, brushSize)
-    cv.imshow(canvas.current, res)
   }, [data.raw && data.raw.ptr, data.threshold && data.threshold.ptr, data.cc && data.cc.static && data.cc.dynamic, canvas && canvas.current, toolPosition.x, toolPosition.y, brushSize, brushSensitivity])
   useEffect(() => {
     if(!data || !data.raw) return
@@ -304,7 +353,7 @@ function OpenCVEditor({show, labels}) {
       <img
         style={{display: 'none'}}
         onLoad={readData}
-        src={`data:image/jpeg;base64, ${TEST_DATA}`} />
+        src={image} />
       <canvas 
         ref={canvas}
         onClick={commitLabel}
@@ -317,15 +366,45 @@ function OpenCVEditor({show, labels}) {
   )
 }
 
-function Editor({show}) {
-  const labelPlaceholder = useRef(null)
-  const [labels, setLabels] = useState({
-    0: {color: "orange"}, 
-    1: {color: "magenta"}, 
-    2: {color: "cyan"}
+function projectLabels(project) {
+  if(!project) return {}
+
+  const entries =  Object.fromEntries(project.labels.map((l, i) => [i, l]))
+  return entries
+}
+
+function getProjectNextFile(project, callback) {
+  lsImages(project.src.id, files => {
+    let annotatedFiles = []
+    if(project.files && project.files.annotated) {
+      annotatedFiles = project.files.annotated.map(f => f.fileId)
+    }
+    let filesToAnnotate = files.filter(file => !annotatedFiles.includes(file.id))
+    if(filesToAnnotate.length > 0) {
+      const fileId = filesToAnnotate[0].id
+      getImage(fileId, data => {
+        callback({
+          image: data,
+          fileId: fileId,
+          startDate: new Date()
+        })
+      })
+    } else console.error(`No available files for project ${project.src.id} ${project.title}`)
   })
+}
+
+function Editor({show, navigateBack, project, commitFileToProject}) {
+  const labelPlaceholder = useRef(null)
+  const [labels, setLabels] = useState([])
   const [state, setState] = useState({label: 0})
-  const gapi = window.gapi
+  const [currentFile, setCurrentFile] = useState({})
+  useEffect(() => {
+    console.log("project changes", project)
+    if(!project || !project.labels) 
+      return
+    setLabels(projectLabels(project))
+    getProjectNextFile(project, setCurrentFile)
+  }, [JSON.stringify(project)])
   const uploadLabel = (image, filename) => {
     const file = image.replace("data:image/png;base64,", "")
     const [data, boundary] = fileToMultipart(`${filename}.png`, file, "image/png")
@@ -345,11 +424,13 @@ function Editor({show}) {
       cv.imshow(labelPlaceholder.current, rgbaToGrayscale(label.mat))
       uploadLabel(labelPlaceholder.current.toDataURL("image/png"), `label_${key}`)
     })
+    commitFileToProject(currentFile)
+    //getProjectNextFile(project, setCurrentFile)
   }
   return (
     <div style={show ? {} : {display: "none"}}>
       <div className="app-navbar">
-        <FontAwesomeIcon className="navbar-icon" icon={faChevronLeft} onClick={() => {}} />
+        <FontAwesomeIcon className="navbar-icon" icon={faChevronLeft} onClick={navigateBack} />
         <div className="editor-main-toolbar">
           <FontAwesomeIcon className="navbar-icon" icon={faSyncAlt} />
           <FontAwesomeIcon className="navbar-icon" icon={faCheckSquare} onClick={() => next()} />
@@ -368,53 +449,19 @@ function Editor({show}) {
           ))}
         </div>
       </div>
-      <OpenCVEditor show={true} labels={{current: state.label, value: labels, set: setLabels}} />
+      <OpenCVEditor 
+        show={true} 
+        labels={{current: state.label, value: labels, set: setLabels}} 
+        image={currentFile.image}
+        
+      />
       <canvas ref={labelPlaceholder} />
     </div>
   )
 }
 
-function listFiles() {
-  window.gapi.client.request('/drive/v3/files').execute(r => {
-    console.log(r)
-  })
-}
 
-function listDrives(callback) {
-  if(!window.gapi) return
-  window.gapi.client.request('/drive/v3/drives').execute(r => {
-    
-  })
-}
-
-function ls(callback) {
-  window.gapi.client.drive.files.list({
-    q: "mimeType = 'application/vnd.google-apps.folder'"
-  }).then(r => {
-    callback(r.result.files)
-  })
-}
-
-function previewFolder(source, callback) {
-
-}
-
-function lsImages(folderId, consumeFiles) {
-  window.gapi.client.drive.files.list({
-    q: `(mimeType = 'image/png' or mimeType = 'image/jpeg') and '${folderId}' in parents`
-  }).then(r => {
-    consumeFiles(r.result.files)
-  })
-}
-
-function getImage(fileId, consumeImage) {
-  window.gapi.client.drive.files.get({
-    fileId: fileId,
-    alt: 'media'
-  }).then(res => consumeImage(`data:${res.headers["Content-Type"]};base64,${btoa(res.body)}`))
-}
-
-function DriveFolder({file}) {
+function DriveFolder({file, createFromSource}) {
   const [files, setFiles] = useState([])
   const [preview, setPreview] = useState()
   useEffect(() => {
@@ -432,29 +479,124 @@ function DriveFolder({file}) {
     }}>
       <span>{file.name}</span>
       <img src={preview} alt="preview" style={preview ? {width: '200px'} : {display: 'none'}} />
-      <button>Create project from source</button>
+      <button onClick={createFromSource}>Create project from source</button>
       <span>{files.length} files</span>
     </div>
   )
 }
 
-function Home({show}) {
-  const gapi = window.gapi
+function getprojects(setProjects) {
+  let projects = localStorage.getItem('projects')
+  if(!projects) projects = []
+  try {
+    projects = JSON.parse(projects)
+  } catch {
+    console.log("error reading projects")
+    projects = []
+  }
+  setProjects(projects)
+}
+
+function createProject(project) {
+  getprojects(projects => {
+    let newValue = projects 
+    newValue.push(project)
+    localStorage.setItem('projects', JSON.stringify(newValue))
+  })
+}
+
+function commitFile(project, file, setProject) {
+  getprojects(projects_ => {
+    let projects = projects_.slice()
+    for(let p of projects) {
+      if(p.src && p.src.id === project.src.id) { 
+        p.files = {
+          annotated: (p.files && p.files.annotated ? p.files.annotated : []).concat([{fileId: file.fileId, startDate: file.startDate}])
+        }
+        setProject(p)
+        break
+      }
+    }
+    localStorage.setItem('projects', JSON.stringify(projects))
+  })
+}
+
+function ProjectCreator({project, create, show}) {
+  const [labels, setLabels] = useState([])
+  const [title, setTitle] = useState('')
+  const changeLabel = (key, labelId) => e => {
+    const labels2 = labels.slice()
+    labels2[labelId][key] = e.target.value 
+    setLabels(labels2) 
+  }
+  const createProject = () => {
+    create({src: project, labels: labels, title: title, date: new Date()})
+  }
+  return (
+    <div style={show ? {} : {display: 'none'}}>
+      {""}
+      <label>Title</label>
+      <input type="text" value={title} 
+        onChange={e => setTitle(e.target.value)} 
+      />
+      <h4>Labels</h4>
+      {labels.map((label, labelId) => (
+        <div style={{display: 'flex'}}>
+          <label>Name</label>
+          <input 
+            value={label.name} 
+            onChange={changeLabel('name', labelId)} 
+          />
+          <label>Color</label>
+          <input 
+            value={label.color} 
+            onChange={changeLabel('color', labelId)} 
+          />
+          <div style={{width: '24px', height: '24px', background: label.color, borderRadius: '4px'}} />
+        </div>
+      ))}
+      <button onClick={() => setLabels(labels.concat({name: "Untitled", color: "red"}))}>
+        Add Label
+      </button>
+      <button onClick={createProject}>Create project</button>
+    </div>
+  )
+}
+
+function Project({project, resume}) {
+  return (
+    <div style={{display: 'flex', flexDirection: 'column', width: '360px', padding: '8px', backgroundColor: 'gray', borderRadius: '8px'}}>
+      <span>{project.title}</span>
+      <span>{project.date}</span>
+      <span>{project.src && project.src.name}</span>
+      <button onClick={resume}>Resume</button>
+    </div>
+  )
+}
+
+function Home({show, newProject, openProject}) {
   const [folders, setFolders] = useState([])
+  const [projects, setProjects] = useState([])
   useEffect(() => {
     if(!show) return
     ls(setFolders)
+    getprojects(setProjects)
   }, [show])
   return (
     <div style={show ? {} : {display: 'none'  }}>
       <h1>PIXL</h1>
       <h2>Projects</h2>
-
-      <h2>Create project</h2>
-      <h3>GDrive sources</h3>
+      <div style={{display: 'flex', justifyContent: 'space-around'}}>
+        {projects.map(proj => <Project
+          project={proj}
+          resume={() => openProject(proj)}
+        />)}
+      </div>
+      <h2>Create project from Google Drive</h2>
       <div style={{display: 'flex', justifyContent: 'space-around'}}>
         {folders.map((f) => <DriveFolder 
           file={f}
+          createFromSource={() => newProject(f)}
         />)}
       </div>
     </div>
@@ -462,30 +604,30 @@ function Home({show}) {
 }
 
 function App() {
-  const [state, setState] = useState({view: "home"})
+  const [state, setState] = useState({view: "home", currentProject: undefined})
   const [gapiState, setGapiState] = useState('unloaded')
-  const gapi = window.gapi
-  console.log("GAPI", gapi)
   useEffect(() => {
-    if(!gapi) {
-      console.log('NO_API event listener')
-      window.addEventListener('gapi', () => console.log("gapi changed"))
-      return
+    if(!window.gapi) { // ugly hack, find better way
+      const interval = setInterval(() =>  {
+        if(window.gapi) setGapiState('loaded')
+      }, 3000)
+      return () => clearInterval(interval) 
     }
-    if("client" in gapi) {
-      console.log("API ready!")
-    }
-    if(gapiState === "loaded") {
+    if(window.gapi.client) {
+      setGapiState('signedin')
+    } else if(gapiState === "loaded") {
       //gapi.auth2.getAuthInstance().signIn()
       console.log("loading Google API...")
-      gapi.load('client:auth2', initClient(() => {
-        console.log("loaded")
-        window.gapi.auth2.getAuthInstance().signIn()
-        window.gapi.auth2.getAuthInstance().isSignedIn.listen((args) => console.log("state changes", args))
+      window.gapi.load('client:auth2', initClient(() => {
+        //window.gapi.auth2.getAuthInstance().signIn()
+        //window.gapi.auth2.getAuthInstance().isSignedIn.listen((args) => console.log("state changes", args))
         setGapiState('signedin')
       }))
     } 
-  }, [window.gapi, gapi, gapiState])
+  }, [window.gapi, gapiState])
+  const commitFileToProject =  (file) => {
+    commitFile(state.currentProject, file, proj => setState(s0 => Object.assign({}, s0, {currentProject: proj})))
+  }
   return (
     <div className="app-main">
       <Helmet>
@@ -499,8 +641,27 @@ function App() {
       <div style={gapiState === 'unloaded' ? {} : {display: 'none'}}>
           <button onClick={() => setGapiState('loaded')}>Sign in</button>
       </div>
-      <Home show={state.view === 'home' && gapiState === 'signedin'} />
-      <Editor show={gapiState === 'signedin' && state.view === 'editor'} />
+      <Home 
+        show={state.view === 'home' && gapiState === 'signedin'} 
+        openProject={proj => setState({view: 'editor', currentProject: proj})}
+        newProject={(file) => {
+          setState({view: 'creator', currentProject: file})
+        }} 
+      />
+      <Editor 
+        navigateBack={() => setState({view: 'home'})}
+        project={state.currentProject}
+        commitFileToProject={commitFileToProject}
+        show={gapiState === 'signedin' && state.view === 'editor'} 
+      />
+      <ProjectCreator 
+        create={proj => {
+          createProject(proj)
+          setState({view: 'editor', currentProject: proj})
+        }}
+        show={state.view === 'creator'} 
+        project={state.currentProject} 
+      />
     </div>
   )
 }
