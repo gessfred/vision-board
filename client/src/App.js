@@ -1,8 +1,9 @@
 import { useState,useEffect, useRef } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faBroom, faCheckSquare, faChevronLeft, faEraser, faForward, faHandSparkles, faSync, faSyncAlt, faTrashAlt } from '@fortawesome/free-solid-svg-icons'
+import { faBroom, faCheckSquare, faChevronLeft, faEraser, faFolder, faForward, faHandSparkles, faPlus, faSignInAlt, faSync, faSyncAlt, faTrash, faTrashAlt } from '@fortawesome/free-solid-svg-icons'
 import './App.css'
 import {Helmet} from "react-helmet"
+import ReactGA from 'react-ga' // use event(obj) or pageview(str)
 const cv = window.cv
 
 
@@ -260,10 +261,10 @@ function initClient(onInit) {
   })
 }
 
-function fileToMultipart(filename, file, mimeType) {
+function fileToMultipart(metadata, file, mimeType) {
   const boundary = "whatever"
   const lines = [
-    "", `--${boundary}`, "Content-Type: application/json", "", JSON.stringify({name: filename, mimeType: mimeType}),
+    "", `--${boundary}`, "Content-Type: application/json", "", JSON.stringify(Object.assign({}, metadata, {mimeType: mimeType})),
     `--${boundary}`, `Content-Type: ${mimeType}`, "Content-Transfer-Encoding: base64", "", file, `--${boundary}--`
   ]
   return [lines.join("\r\n"), boundary]
@@ -272,9 +273,10 @@ function fileToMultipart(filename, file, mimeType) {
 function OpenCVEditor({show, labels, image}) {
   const [data, setData] = useState({raw: null, threshold: null})
   const canvas = useRef(null)
+  const imageRef = useRef(null)
   const cv = window.cv 
   const [toolPosition, setToolPosition] = useState({x: 0, y: 0})
-  const [brushSize, setBrushSize] = useState(10)
+  const [brushSize, setBrushSize] = useState(25)
   const [brushSensitivity, setBrushSensitivity] = useState(80) //=threshold
   const [isEditingBrush, setIsEditingBrush] = useState(false)
   const [editingSrc, setEditingSrc] = useState(0)
@@ -284,11 +286,15 @@ function OpenCVEditor({show, labels, image}) {
     if(!canvas.current) return
     if(!isEditingBrush) {
       const rect = canvas.current.getBoundingClientRect()
-      setToolPosition({x: Math.round((e.clientX - rect.left)), y: Math.round((e.clientY - rect.top))})
+      setToolPosition({
+        x: Math.round(imageRef.current.width * (e.clientX - rect.left) / canvas.current.offsetWidth), 
+        y: Math.round(imageRef.current.height * (e.clientY - rect.top) / canvas.current.offsetHeight)
+      })
     } else {
       setBrushSensitivity(Math.round((e.clientX - editingSrc) + editingStart + 255) % 255) // TODO prevent overflow
     }
   }
+  console.log(toolPosition)
   const controlBrush = event => {
     event.preventDefault()
     setBrushSize(x => x + event.deltaY * 0.01)
@@ -354,13 +360,22 @@ function OpenCVEditor({show, labels, image}) {
   }, [data.raw && data.raw.ptr, data.threshold && data.threshold.ptr, data.cc && data.cc.static && data.cc.dynamic, canvas && canvas.current, toolPosition.x, toolPosition.y, brushSize, brushSensitivity])
   useEffect(() => {
     if(!data || !data.raw) return
-    setData((p) => Object.assign({}, p, {threshold: computeThreshold(p.raw, brushSensitivity)}))
+    setData(p => {
+      const T = computeThreshold(p.raw, brushSensitivity)
+      cv.GaussianBlur(T, T, new cv.Size(5, 5), 10)
+      return Object.assign({}, p, {threshold: T})
+    })
   }, [data.raw, brushSensitivity])
   return (
-    <div style={show ? {} : {display: "none"}}>
+    <div style={show ? { 
+      height: 'calc(100vh - 128px)',
+      display: 'flex',
+      justifyContent: 'center'
+    } : {display: "none"}}>
       <img
         style={{display: 'none'}}
         onLoad={readData}
+        ref={imageRef}
         src={image} />
       <canvas 
         ref={canvas}
@@ -387,17 +402,18 @@ function getProjectNextFile(project, callback) {
     if(project.files && project.files.annotated) {
       annotatedFiles = project.files.annotated.map(f => f.fileId)
     }
-    let filesToAnnotate = files.filter(file => !annotatedFiles.includes(file.id))
+    let filesToAnnotate = files.filter(file => !annotatedFiles.includes(file.id) && !file.name.includes('label'))
     if(filesToAnnotate.length > 0) {
       const fileId = filesToAnnotate[0].id
       getImage(fileId, data => {
         callback({
           image: data,
           fileId: fileId,
+          filename: filesToAnnotate[0].name,
           startDate: new Date()
         })
       })
-    } else console.error(`No available files for project ${project.src.id} ${project.title}`)
+    } callback({})
   })
 }
 
@@ -411,11 +427,18 @@ function Editor({show, navigateBack, project, commitFileToProject}) {
     if(!project || !project.labels) 
       return
     setLabels(projectLabels(project))
+    setCurrentFile({})
     getProjectNextFile(project, setCurrentFile)
   }, [JSON.stringify(project)])
   const uploadLabel = (image, filename) => {
     const file = image.replace("data:image/png;base64,", "")
-    const [data, boundary] = fileToMultipart(`${filename}.png`, file, "image/png")
+    const ln = `_${filename}.png`
+    const name = currentFile.filename.replace('.png', ln).replace('.jpeg', ln).replace('.jpg', ln)
+    const metadata = {
+      name: name,
+      parents: [project.src.id]
+    }
+    const [data, boundary] = fileToMultipart(metadata, file, "image/png")
     if(!window.gapi) return //return error or throw
     window.gapi.client.request({
       path: '/upload/drive/v3/files?uploadType=multipart',
@@ -433,17 +456,17 @@ function Editor({show, navigateBack, project, commitFileToProject}) {
       uploadLabel(labelPlaceholder.current.toDataURL("image/png"), `label_${key}`)
     })
     commitFileToProject(currentFile)
-    //getProjectNextFile(project, setCurrentFile)
   }
+  const live = currentFile.image !== undefined
   return (
     <div style={show ? {} : {display: "none"}}>
       <div className="app-navbar">
         <FontAwesomeIcon className="navbar-icon" icon={faChevronLeft} onClick={navigateBack} />
+        <div >
+          <h2>{project && project.title}</h2>
+        </div>
         <div className="editor-main-toolbar">
-          <FontAwesomeIcon className="navbar-icon" icon={faSyncAlt} />
           <FontAwesomeIcon className="navbar-icon" icon={faCheckSquare} onClick={() => next()} />
-          <FontAwesomeIcon className="navbar-icon" icon={faForward} />
-          <FontAwesomeIcon className="navbar-icon" icon={faTrashAlt} />
         </div>
         <div className="editor-toolbox" style={{display: 'flex'}}>
           <ThresholdBrushIcon height={28} width={28} onClick={() => {}} />
@@ -458,12 +481,15 @@ function Editor({show, navigateBack, project, commitFileToProject}) {
         </div>
       </div>
       <OpenCVEditor 
-        show={true} 
+        show={live} 
         labels={{current: state.label, value: labels, set: setLabels}} 
         image={currentFile.image}
         
       />
-      <canvas ref={labelPlaceholder} />
+      <div style={!live ? {} : {display:'none'}}>
+        <h1>No more files.</h1>
+      </div>
+      <canvas style={{display: 'none'}} ref={labelPlaceholder} />
     </div>
   )
 }
@@ -481,14 +507,21 @@ function DriveFolder({file, createFromSource}) {
     getImage(files[0].id, setPreview)
   }, [files.length])
   return (
-    <div style={{width: '240px', background: 'rgba(30,30,30,0.5)', 
-      display: 'flex', flexDirection: 'column', alignItems: 'center',
-      borderRadius: '8px', justifyContent: 'space-between'
+    <div style={{background: 'rgba(49,49,49,0.7)', 
+      display: 'flex', flexDirection: 'row', alignItems: 'center',
+      borderRadius: '8px', justifyContent: 'space-between', overflow: 'hidden',
+      margin: '8px'
     }}>
-      <span>{file.name}</span>
-      <img src={preview} alt="preview" style={preview ? {width: '200px'} : {display: 'none'}} />
+      <div style={{display: 'flex', height: '100%', justifyContent: 'flex-start', alignItems: 'center'}}>
+        <img 
+          src={preview} 
+          alt="preview" 
+          style={preview ? {height: '96px', maxWidth: '96px', marginRight: '16px'} : {display: 'none'}}   
+        />
+        <span>{file.name}/</span>
+        <span>{files.length} files</span>
+      </div>
       <button onClick={createFromSource}>Create project from source</button>
-      <span>{files.length} files</span>
     </div>
   )
 }
@@ -529,55 +562,113 @@ function commitFile(project, file, setProject) {
   })
 }
 
+function deleteProject(projectId, cb) {
+  getprojects(projects => {
+    const f = projects.slice().filter(p => (p.title!==projectId.title) && (p.date!==projectId.date))
+    localStorage.setItem('projects', JSON.stringify(f))
+    cb(f)
+  })
+}
+
 function ProjectCreator({project, create, show}) {
   const [labels, setLabels] = useState([])
   const [title, setTitle] = useState('')
+  const [error, setError] = useState()
   const changeLabel = (key, labelId) => e => {
     const labels2 = labels.slice()
     labels2[labelId][key] = e.target.value 
     setLabels(labels2) 
   }
   const createProject = () => {
+    if(labels.length == 0) {
+      setError('Projects must have at least one label')
+      return
+    }
     create({src: project, labels: labels, title: title, date: new Date()})
   }
   return (
     <div style={show ? {} : {display: 'none'}}>
-      {""}
-      <label>Title</label>
-      <input type="text" value={title} 
-        onChange={e => setTitle(e.target.value)} 
-      />
-      <h4>Labels</h4>
-      {labels.map((label, labelId) => (
-        <div style={{display: 'flex'}}>
-          <label>Name</label>
-          <input 
-            value={label.name} 
-            onChange={changeLabel('name', labelId)} 
-          />
-          <label>Color</label>
-          <input 
-            value={label.color} 
-            onChange={changeLabel('color', labelId)} 
-          />
-          <div style={{width: '24px', height: '24px', background: label.color, borderRadius: '4px'}} />
+      <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+        <h2>Title</h2>
+        <input type="text" value={title} 
+        style={{margin: '16px'}}
+          onChange={e => setTitle(e.target.value)} 
+        />
+      </div>
+      <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '64px'}}>
+        <div>
+          <h4>Labels</h4>
+          {labels.map((label, labelId) => (
+            <div style={{display: 'flex'}}>
+              <label>Name</label>
+              <input 
+                value={label.name} 
+                onChange={changeLabel('name', labelId)} 
+              />
+              <label>Color</label>
+              <input 
+                value={label.color} 
+                onChange={changeLabel('color', labelId)} 
+              />
+              <div style={{width: '24px', height: '24px', background: label.color, borderRadius: '4px'}} />
+            </div>
+          ))}
+          <button onClick={() => setLabels(labels.concat({name: "Untitled", color: "red"}))}>
+            <FontAwesomeIcon icon={faPlus} />
+            Label
+          </button>
         </div>
-      ))}
-      <button onClick={() => setLabels(labels.concat({name: "Untitled", color: "red"}))}>
-        Add Label
-      </button>
-      <button onClick={createProject}>Create project</button>
+        <div style={{display: 'flex', flexDirection: 'column'}}>
+          <button onClick={createProject}>Create project</button>
+          <span style={{color: 'red', fontWeight: 'bold', fontSize: '16px'}}>{error}</span>
+        </div>
+      </div>
     </div>
   )
 }
 
-function Project({project, resume}) {
+function Project({project, resume, rm}) {
+  const [files, setFiles] = useState([])
+  const [preview, setPreview] = useState()
+  useEffect(() => {
+    if(!project || !project.src || !project.src.id) return
+    lsImages(project.src.id, setFiles)
+  }, [project && project.src && project.src.id])
+  useEffect(() => {
+    if(files.length < 1) return
+    getImage(files[0].id, setPreview)
+  }, [files.length])
   return (
-    <div style={{display: 'flex', flexDirection: 'column', width: '360px', padding: '8px', backgroundColor: 'gray', borderRadius: '8px'}}>
-      <span>{project.title}</span>
-      <span>{project.date}</span>
-      <span>{project.src && project.src.name}</span>
-      <button onClick={resume}>Resume</button>
+    <div className="project-card">
+      <img 
+        src={preview} 
+        alt="preview" 
+        style={preview ? {width: '100%', height: '128px', objectFit: 'cover'} : {display: 'none'}}   
+      />
+      <div style={{display: 'flex', flexDirection: 'column', margin: '4px'}}>
+        <h3 className="project-card-title">{project.title}</h3>
+        <div style={{display: 'flex', justifyContent: 'space-between'}}>
+          <small className="project-card-meta">
+            {project.date}
+          </small>
+          <span className="project-card-src">
+            <FontAwesomeIcon icon={faFolder} style={{marginRight: '8px'}} />
+            {project.src && project.src.name}/
+          </span>
+        </div>
+      </div>
+      <div 
+        style={{
+          display: 'flex', 
+          margin: '4px', 
+          justifyContent: 'space-around',
+          padding :'16px',
+          fontSize: '28px'
+        }}
+      >
+        <FontAwesomeIcon className="project-card-button" icon={faSignInAlt} onClick={resume} />
+        <FontAwesomeIcon className="project-card-button" icon={faTrash} onClick={rm} />
+      </div>
     </div>
   )
 }
@@ -590,18 +681,20 @@ function Home({show, newProject, openProject}) {
     ls(setFolders)
     getprojects(setProjects)
   }, [show])
+  console.log(projects)
   return (
     <div style={show ? {} : {display: 'none'  }}>
       <h1>PIXL</h1>
       <h2>Projects</h2>
-      <div style={{display: 'flex', justifyContent: 'space-around'}}>
+      <div className="home-projects">
         {projects.map(proj => <Project
           project={proj}
           resume={() => openProject(proj)}
+          rm={() => deleteProject({title: proj.title, date: proj.date}, setProjects)}
         />)}
       </div>
       <h2>Create project from Google Drive</h2>
-      <div style={{display: 'flex', justifyContent: 'space-around'}}>
+      <div className="home-folders">
         {folders.map((f) => <DriveFolder 
           file={f}
           createFromSource={() => newProject(f)}
@@ -630,6 +723,7 @@ function App() {
         window.gapi.auth2.getAuthInstance().signIn()
         //window.gapi.auth2.getAuthInstance().isSignedIn.listen((args) => console.log("state changes", args))
         setGapiState('signedin')
+        ReactGA.initialize('')
       }))
     } 
   }, [window.gapi, gapiState])
@@ -673,6 +767,3 @@ function App() {
 }
 
 export default App
-
-// /Users/fredericgessler/Documents/amiscan/asbestos/misc/*
-// /Users/fredericgessler/Documents/amiscan/experimental/mask/checkpoints/deeplabv3_mobilnetv2beneficial_rattlesnake-epoch59.ckpt

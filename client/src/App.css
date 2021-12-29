@@ -1,3 +1,30 @@
+.home-projects {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  overflow: scroll;
+
+}
+
+.project-card-button {
+  cursor: pointer;
+}
+
+.project-card-button:hover {
+  color: gray;
+}
+
+.project-card {
+  margin: 4px;
+  display: flex;
+  flex-direction: column;
+  width: 360px;
+  overflow: hidden;
+  color: white;
+  background-color: rgb(49, 49, 49);
+  border-radius: 24px;
+}
+
 body {
   background-color: rgb(0, 255, 42);
   font-family: Futura;
@@ -5,6 +32,7 @@ body {
 
 .editor-main-toolbar {
   height: 100%;
+  align-items: stretch;
 }
 
 .label-icon {
@@ -37,12 +65,11 @@ body {
 }
 
 .app-navbar {
-  border: 2px white;
-  height: 32px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 8px;
+  padding: 8px;
   /*background-image: linear-gradient(to bottom right, dodgerblue, whitesmoke);*/
 }
 .treshold-brush-icon-container {
@@ -91,17 +118,14 @@ body {
 
 .navbar-icon {
   height: 100%;
-  background-color: rgb(145, 145, 145);
   padding-left: 16px;
   padding-right: 16px;
-  border: 2px solid darkgray;
   cursor: pointer;
-  border-bottom: 3px solid darkgray;
-  border-right: 3px solid darkgray;
+  font-size: 24px;
 }
 
 .navbar-icon:hover {
-  color: whitesmoke;
+  color: gray;
 }
 
 .editor-title {
