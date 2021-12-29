@@ -294,7 +294,6 @@ function OpenCVEditor({show, labels, image}) {
       setBrushSensitivity(Math.round((e.clientX - editingSrc) + editingStart + 255) % 255) // TODO prevent overflow
     }
   }
-  console.log(toolPosition)
   const controlBrush = event => {
     event.preventDefault()
     setBrushSize(x => x + event.deltaY * 0.01)
@@ -423,7 +422,7 @@ function Editor({show, navigateBack, project, commitFileToProject}) {
   const [state, setState] = useState({label: 0})
   const [currentFile, setCurrentFile] = useState({})
   useEffect(() => {
-    console.log("project changes", project)
+    //console.log("project changes", project)
     if(!project || !project.labels) 
       return
     setLabels(projectLabels(project))
@@ -681,10 +680,9 @@ function Home({show, newProject, openProject}) {
     ls(setFolders)
     getprojects(setProjects)
   }, [show])
-  console.log(projects)
   return (
     <div style={show ? {} : {display: 'none'  }}>
-      <h1>PIXL</h1>
+      <h1>Vision Board</h1>
       <h2>Projects</h2>
       <div className="home-projects">
         {projects.map(proj => <Project
@@ -718,7 +716,7 @@ function App() {
       setGapiState('signedin')
     } else if(gapiState === "loaded") {
       //gapi.auth2.getAuthInstance().signIn()
-      console.log("loading Google API...")
+      //console.log("loading Google API...")
       window.gapi.load('client:auth2', initClient(() => {
         window.gapi.auth2.getAuthInstance().signIn()
         //window.gapi.auth2.getAuthInstance().isSignedIn.listen((args) => console.log("state changes", args))
